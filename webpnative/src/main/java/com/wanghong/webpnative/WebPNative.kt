@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package com.wanghong.sample
+package com.wanghong.webpnative
 
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import com.wanghong.webpnative.WebPNative
+/**
+ * Created by wanghonglin on 2019/2/15 10:22 AM.
+ */
+class WebPNative {
 
-class SampleActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sample)
-
-        WebPNative().checkWebPVersion()
+    init {
+        System.loadLibrary("webpnative")
     }
+
+    external fun checkWebPVersion();
 }
