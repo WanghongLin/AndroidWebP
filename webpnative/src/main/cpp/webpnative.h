@@ -15,6 +15,30 @@ extern "C" {
 JNIEXPORT void JNICALL Java_com_wanghong_webpnative_WebPNative_checkWebPVersion
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_wanghong_webpnative_WebPNative
+ * Method:    initialize
+ * Signature: ([B)V
+ */
+JNIEXPORT void JNICALL Java_com_wanghong_webpnative_WebPNative_initialize
+  (JNIEnv *, jobject, jbyteArray);
+
+/*
+ * Class:     com_wanghong_webpnative_WebPNative
+ * Method:    hasNextFrame
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_wanghong_webpnative_WebPNative_hasNextFrame
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_wanghong_webpnative_WebPNative
+ * Method:    nextFrame
+ * Signature: (Ljava/nio/ByteBuffer;)V
+ */
+JNIEXPORT void JNICALL Java_com_wanghong_webpnative_WebPNative_nextFrame
+  (JNIEnv *, jobject, jobject);
+
 #ifdef __cplusplus
 }
 #endif

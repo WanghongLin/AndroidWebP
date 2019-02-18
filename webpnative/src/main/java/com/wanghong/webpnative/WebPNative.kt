@@ -16,6 +16,8 @@
 
 package com.wanghong.webpnative
 
+import java.nio.ByteBuffer
+
 /**
  * Created by wanghonglin on 2019/2/15 10:22 AM.
  */
@@ -26,4 +28,10 @@ class WebPNative {
     }
 
     external fun checkWebPVersion();
+
+    external fun initialize(byteArray: ByteArray)
+
+    external fun hasNextFrame(): Boolean
+
+    external fun nextFrame(byteBuffer: ByteBuffer)
 }

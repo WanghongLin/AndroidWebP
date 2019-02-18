@@ -16,9 +16,17 @@
 
 package com.wanghong.sample
 
-import android.support.v7.app.AppCompatActivity
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
-import com.wanghong.webpnative.WebPNative
+import android.os.Environment
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v4.content.PermissionChecker
+import android.support.v7.app.AppCompatActivity
+import com.wanghong.webpnative.WebPDrawable
+import kotlinx.android.synthetic.main.activity_sample.*
+import java.io.File
 
 class SampleActivity : AppCompatActivity() {
 
@@ -26,6 +34,25 @@ class SampleActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sample)
 
-        WebPNative().checkWebPVersion()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            with(Manifest.permission.READ_EXTERNAL_STORAGE) {
+                if (ContextCompat.checkSelfPermission(this@SampleActivity, this) == PermissionChecker.PERMISSION_GRANTED) {
+                    displayImage()
+                } else {
+                    ActivityCompat.requestPermissions(this@SampleActivity, arrayOf(this), 0)
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (grantResults[0] == PermissionChecker.PERMISSION_GRANTED) {
+            displayImage()
+        }
+    }
+
+    private fun displayImage() {
+        sampleImageView.setImageDrawable(WebPDrawable(Environment.getExternalStorageDirectory().absolutePath + File.separator + "normal.webp"));
     }
 }

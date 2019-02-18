@@ -19,3 +19,14 @@ void Java_com_wanghong_webpnative_WebPNative_checkWebPVersion(JNIEnv * env, jobj
     WebPCheckVersion_();
 }
 
+void Java_com_wanghong_webpnative_WebPNative_initialize(JNIEnv *, jobject, jbyteArray) {
+
+}
+
+jboolean Java_com_wanghong_webpnative_WebPNative_hasNextFrame(JNIEnv *, jobject) {
+    return 0;
+}
+
+void Java_com_wanghong_webpnative_WebPNative_nextFrame(JNIEnv *, jobject, jobject) {
+
+}
