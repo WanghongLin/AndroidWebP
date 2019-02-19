@@ -27,11 +27,16 @@ public:
     static WebPInternal* get(jint id);
     static void put(jint id, WebPInternal* internal);
 private:
+    bool hasFlag(int flag);
     uint8_t* buffer_;
     size_t size_;
 
     WebPData* webPData;
     WebPDemuxer* demuxer;
+    WebPAnimDecoder* animDecoder;
+    WebPAnimInfo animInfo;
+    int currentLoopCount;
+    int currentFrameCount;
 
     WebPIterator* iterator;
     int frameNumber;

@@ -24,8 +24,10 @@ WebPInternal::WebPInternal(uint8_t *buffer, size_t size) : buffer_(buffer), size
         loopCount = WebPDemuxGetI(demuxer, WEBP_FF_LOOP_COUNT);
         backgroundColor = WebPDemuxGetI(demuxer, WEBP_FF_BACKGROUND_COLOR);
 
-        if (flags & ANIMATION_FLAG) {
+        if (hasFlag(ANIMATION_FLAG)) {
             __android_log_print(ANDROID_LOG_DEBUG, TAG, "animation webp\n");
+            animDecoder = WebPAnimDecoderNew(webPData, nullptr);
+            WebPAnimDecoderGetInfo(animDecoder, &animInfo);
         } else {
             __android_log_print(ANDROID_LOG_DEBUG, TAG, "normal webp with %dx%d\n", canvasWidth, canvasHeight);
         }
@@ -40,6 +42,9 @@ WebPInternal::~WebPInternal() {
     WebPDemuxReleaseIterator(iterator);
     WebPDemuxDelete(demuxer);
     WebPDataClear(webPData);
+    if (animDecoder) {
+        WebPAnimDecoderDelete(animDecoder);
+    }
 }
 
 WebPInternal* WebPInternal::get(jint id) {
@@ -51,6 +56,9 @@ void WebPInternal::put(jint id, WebPInternal *internal) {
 }
 
 jboolean WebPInternal::hasNextFrame() {
+    if (hasFlag(ANIMATION_FLAG)) {
+        return static_cast<jboolean>(WebPAnimDecoderHasMoreFrames(animDecoder));
+    }
     if (frameNumber == 1 || WebPDemuxNextFrame(iterator) != 0) {
         return 1;
     }
@@ -58,6 +66,24 @@ jboolean WebPInternal::hasNextFrame() {
 }
 
 void WebPInternal::nextFrame(void *outBuffer, size_t outSize) {
+    if (hasFlag(ANIMATION_FLAG)) {
+        uint8_t* buf;
+        WebPAnimDecoderGetNext(animDecoder, &buf, &timeStamp);
+        width = animInfo.canvas_width;
+        height = animInfo.canvas_height;
+        std::memcpy(outBuffer, buf, outSize);
+
+        currentFrameCount++;
+        if (currentFrameCount == animInfo.frame_count) {
+            if (animInfo.loop_count == 0 || ++currentLoopCount < animInfo.loop_count) {
+                // start from beginning
+                currentFrameCount = 0;
+                WebPAnimDecoderReset(animDecoder);
+            }
+        }
+        return;
+    }
+
     if (demuxer && iterator) {
         WebPDemuxGetFrame(demuxer, frameNumber++, iterator);
         if (outBuffer && outSize > 0) {
@@ -78,5 +104,9 @@ void WebPInternal::fillWebPInfo(JNIEnv *env, jobject webpInfo) {
     env->SetIntField(webpInfo, env->GetFieldID(clz, "loopCount", "I"), loopCount);
     env->SetIntField(webpInfo, env->GetFieldID(clz, "frameCount", "I"), frameCount);
     env->SetIntField(webpInfo, env->GetFieldID(clz, "timeStamp", "I"), timeStamp);
+}
+
+bool WebPInternal::hasFlag(int flag) {
+    return (flags & flag) == flag;
 }
 

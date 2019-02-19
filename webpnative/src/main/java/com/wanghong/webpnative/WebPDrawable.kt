@@ -34,6 +34,7 @@ class WebPDrawable(path: String) : Drawable() {
     private var bitmap: Bitmap
     private var handler: Handler
     private var runnable: Runnable
+    private var previousTimestamp: Int = 0
 
     companion object {
         val TAG = WebPDrawable::class.java.simpleName
@@ -55,10 +56,10 @@ class WebPDrawable(path: String) : Drawable() {
                 val webPInfo = WebPInfo()
                 if (webPNative.hasNextFrame()) {
                     webPNative.nextFrame(byteBuffer, webPInfo)
-                    byteBuffer.position(0)
-                    byteBuffer.limit(webPInfo.imageSize())
+                    println("WebPDrawable.run $webPInfo")
                     invalidateSelf()
-                    handler.post(this)
+                    handler.postDelayed(this, (webPInfo.timeStamp-previousTimestamp).toLong())
+                    previousTimestamp = webPInfo.timeStamp
                 }
             }
         }
@@ -68,8 +69,9 @@ class WebPDrawable(path: String) : Drawable() {
     }
 
     override fun draw(canvas: Canvas) {
-        println("WebPDrawable.draw")
         with(bitmap) {
+            byteBuffer.position(0)
+            byteBuffer.limit(webPInfo.canvasSize())
             this.copyPixelsFromBuffer(byteBuffer)
             canvas.drawBitmap(this, 0f, 0f, null)
         }

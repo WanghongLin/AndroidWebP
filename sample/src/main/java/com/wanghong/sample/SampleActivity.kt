@@ -53,6 +53,6 @@ class SampleActivity : AppCompatActivity() {
     }
 
     private fun displayImage() {
-        sampleImageView.setImageDrawable(WebPDrawable(Environment.getExternalStorageDirectory().absolutePath + File.separator + "normal.webp"));
+        sampleImageView.setImageDrawable(WebPDrawable(Environment.getExternalStorageDirectory().absolutePath + File.separator + "1.webp"));
     }
 }
