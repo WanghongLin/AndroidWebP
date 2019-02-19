@@ -16,11 +16,12 @@
 
 package com.wanghong.webpnative
 
-import android.graphics.Canvas
-import android.graphics.ColorFilter
-import android.graphics.PixelFormat
+import android.graphics.*
 import android.graphics.drawable.Drawable
+import android.os.Handler
+import android.os.HandlerThread
 import java.io.FileInputStream
+import java.nio.ByteBuffer
 
 /**
  * Created by wanghonglin on 2019/2/18 11:37 AM.
@@ -28,6 +29,11 @@ import java.io.FileInputStream
 class WebPDrawable(path: String) : Drawable() {
 
     private val webPNative = WebPNative()
+    private val webPInfo = WebPInfo()
+    private var byteBuffer: ByteBuffer
+    private var bitmap: Bitmap
+    private var handler: Handler
+    private var runnable: Runnable
 
     companion object {
         val TAG = WebPDrawable::class.java.simpleName
@@ -35,12 +41,46 @@ class WebPDrawable(path: String) : Drawable() {
 
     init {
         FileInputStream(path).use {
-            webPNative.initialize(it.readBytes())
+            webPNative.initialize(it.readBytes(), webPInfo)
         }
+
+        handler = Handler(HandlerThread("webp").apply { start() }.looper)
+
+        byteBuffer = ByteBuffer.allocateDirect(webPInfo.canvasSize())
+        bitmap = Bitmap.createBitmap(webPInfo.canvasWidth, webPInfo.canvasHeight, Bitmap.Config.ARGB_8888)
+        setBounds(0, 0, webPInfo.canvasWidth, webPInfo.canvasHeight)
+
+        runnable = object : Runnable {
+            override fun run() {
+                val webPInfo = WebPInfo()
+                if (webPNative.hasNextFrame()) {
+                    webPNative.nextFrame(byteBuffer, webPInfo)
+                    byteBuffer.position(0)
+                    byteBuffer.limit(webPInfo.imageSize())
+                    invalidateSelf()
+                    handler.post(this)
+                }
+            }
+        }
+
+        handler.post(runnable)
+        println("WebPDrawable.$webPInfo")
     }
 
     override fun draw(canvas: Canvas) {
         println("WebPDrawable.draw")
+        with(bitmap) {
+            this.copyPixelsFromBuffer(byteBuffer)
+            canvas.drawBitmap(this, 0f, 0f, null)
+        }
+    }
+
+    override fun getIntrinsicWidth(): Int {
+        return if (webPInfo.canvasWidth != 0) webPInfo.canvasWidth else super.getIntrinsicWidth()
+    }
+
+    override fun getIntrinsicHeight(): Int {
+        return if (webPInfo.canvasHeight != 0) webPInfo.canvasHeight else super.getIntrinsicHeight()
     }
 
     override fun setAlpha(alpha: Int) {

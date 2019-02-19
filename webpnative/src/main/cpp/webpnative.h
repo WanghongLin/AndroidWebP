@@ -18,10 +18,10 @@ JNIEXPORT void JNICALL Java_com_wanghong_webpnative_WebPNative_checkWebPVersion
 /*
  * Class:     com_wanghong_webpnative_WebPNative
  * Method:    initialize
- * Signature: ([B)V
+ * Signature: ([BLcom/wanghong/webpnative/WebPInfo;)V
  */
 JNIEXPORT void JNICALL Java_com_wanghong_webpnative_WebPNative_initialize
-  (JNIEnv *, jobject, jbyteArray);
+  (JNIEnv *, jobject, jbyteArray, jobject);
 
 /*
  * Class:     com_wanghong_webpnative_WebPNative
@@ -34,10 +34,10 @@ JNIEXPORT jboolean JNICALL Java_com_wanghong_webpnative_WebPNative_hasNextFrame
 /*
  * Class:     com_wanghong_webpnative_WebPNative
  * Method:    nextFrame
- * Signature: (Ljava/nio/ByteBuffer;)V
+ * Signature: (Ljava/nio/ByteBuffer;Lcom/wanghong/webpnative/WebPInfo;)V
  */
 JNIEXPORT void JNICALL Java_com_wanghong_webpnative_WebPNative_nextFrame
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jobject, jobject);
 
 #ifdef __cplusplus
 }

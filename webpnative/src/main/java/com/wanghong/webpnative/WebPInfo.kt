@@ -16,22 +16,14 @@
 
 package com.wanghong.webpnative
 
-import java.nio.ByteBuffer
-
-/**
- * Created by wanghonglin on 2019/2/15 10:22 AM.
- */
-class WebPNative {
-
-    init {
-        System.loadLibrary("webpnative")
-    }
-
-    external fun checkWebPVersion();
-
-    external fun initialize(byteArray: ByteArray, webPInfo: WebPInfo)
-
-    external fun hasNextFrame(): Boolean
-
-    external fun nextFrame(byteBuffer: ByteBuffer, webPInfo: WebPInfo)
+data class WebPInfo(val canvasWidth: Int = 0,
+                    val canvasHeight: Int = 0,
+                    val width: Int = 0,
+                    val height: Int = 0,
+                    val backgroundColor: Int = 0,
+                    val loopCount: Int = 0,
+                    val frameCount: Int = 0,
+                    val timeStamp: Int = 0) {
+    fun canvasSize() = canvasWidth * canvasHeight * 4
+    fun imageSize() = width * height * 4
 }
