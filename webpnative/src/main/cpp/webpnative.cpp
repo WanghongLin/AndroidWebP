@@ -52,3 +52,10 @@ void Java_com_wanghong_webpnative_WebPNative_nextFrame(JNIEnv * env, jobject obj
         internal->fillWebPInfo(env, webpInfo);
     }
 }
+
+void Java_com_wanghong_webpnative_WebPNative_release(JNIEnv * env, jobject obj) {
+    WebPInternal* internal = WebPInternal::get(GetJavaObjectId(env, obj));
+    if (internal) {
+        delete internal;
+    }
+}

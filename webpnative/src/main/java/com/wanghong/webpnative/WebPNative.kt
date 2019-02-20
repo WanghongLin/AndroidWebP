@@ -27,11 +27,13 @@ class WebPNative {
         System.loadLibrary("webpnative")
     }
 
-    external fun checkWebPVersion();
+    external fun checkWebPVersion()
 
     external fun initialize(byteArray: ByteArray, webPInfo: WebPInfo)
 
     external fun hasNextFrame(): Boolean
 
     external fun nextFrame(byteBuffer: ByteBuffer, webPInfo: WebPInfo)
+
+    external fun release()
 }

@@ -39,6 +39,14 @@ JNIEXPORT jboolean JNICALL Java_com_wanghong_webpnative_WebPNative_hasNextFrame
 JNIEXPORT void JNICALL Java_com_wanghong_webpnative_WebPNative_nextFrame
   (JNIEnv *, jobject, jobject, jobject);
 
+/*
+ * Class:     com_wanghong_webpnative_WebPNative
+ * Method:    release
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_wanghong_webpnative_WebPNative_release
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

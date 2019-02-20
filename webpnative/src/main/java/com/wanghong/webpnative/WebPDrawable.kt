@@ -18,6 +18,7 @@ package com.wanghong.webpnative
 
 import android.graphics.*
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import java.io.FileInputStream
@@ -26,26 +27,50 @@ import java.nio.ByteBuffer
 /**
  * Created by wanghonglin on 2019/2/18 11:37 AM.
  */
-class WebPDrawable(path: String) : Drawable() {
+class WebPDrawable(var webPData: ByteArray? = null) : Drawable() {
 
     private val webPNative = WebPNative()
     private val webPInfo = WebPInfo()
-    private var byteBuffer: ByteBuffer
-    private var bitmap: Bitmap
-    private var handler: Handler
-    private var runnable: Runnable
+    private lateinit var byteBuffer: ByteBuffer
+    private lateinit var bitmap: Bitmap
+    private lateinit var handler: Handler
+    private lateinit var handlerThread: HandlerThread
+    private lateinit var runnable: Runnable
     private var previousTimestamp: Int = 0
 
     companion object {
         val TAG = WebPDrawable::class.java.simpleName
     }
 
-    init {
-        FileInputStream(path).use {
-            webPNative.initialize(it.readBytes(), webPInfo)
+    fun start() {
+        initialize()
+    }
+
+    fun stop() {
+        webPNative.release()
+        if (::handler.isInitialized) {
+            handler.removeCallbacksAndMessages(null)
+        }
+        if (::handlerThread.isInitialized) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                handlerThread.quitSafely()
+            } else {
+                handlerThread.quit()
+            }
+        }
+    }
+
+    private fun initialize() {
+        if (webPData == null) {
+            return
         }
 
-        handler = Handler(HandlerThread("webp").apply { start() }.looper)
+        webPNative.initialize(webPData!!, webPInfo)
+
+        handler = Handler(HandlerThread("webp").apply {
+            handlerThread = this
+            start()
+        }.looper)
 
         byteBuffer = ByteBuffer.allocateDirect(webPInfo.canvasSize())
         bitmap = Bitmap.createBitmap(webPInfo.canvasWidth, webPInfo.canvasHeight, Bitmap.Config.ARGB_8888)
@@ -58,7 +83,13 @@ class WebPDrawable(path: String) : Drawable() {
                     webPNative.nextFrame(byteBuffer, webPInfo)
                     println("WebPDrawable.run $webPInfo")
                     invalidateSelf()
-                    handler.postDelayed(this, (webPInfo.timeStamp-previousTimestamp).toLong())
+
+                    var delay = webPInfo.timeStamp - previousTimestamp
+                    if (delay <= 0) {
+                        delay = 40
+                    }
+
+                    handler.postDelayed(this, delay.toLong())
                     previousTimestamp = webPInfo.timeStamp
                 }
             }
@@ -69,11 +100,13 @@ class WebPDrawable(path: String) : Drawable() {
     }
 
     override fun draw(canvas: Canvas) {
-        with(bitmap) {
-            byteBuffer.position(0)
-            byteBuffer.limit(webPInfo.canvasSize())
-            this.copyPixelsFromBuffer(byteBuffer)
-            canvas.drawBitmap(this, 0f, 0f, null)
+        if (::bitmap.isInitialized and ::byteBuffer.isInitialized) {
+            with(bitmap) {
+                byteBuffer.position(0)
+                byteBuffer.limit(webPInfo.canvasSize())
+                this.copyPixelsFromBuffer(byteBuffer)
+                canvas.drawBitmap(this, 0f, 0f, null)
+            }
         }
     }
 
