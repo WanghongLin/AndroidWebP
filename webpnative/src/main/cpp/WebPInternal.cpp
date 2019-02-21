@@ -25,11 +25,11 @@ WebPInternal::WebPInternal(uint8_t *buffer, size_t size) : buffer_(buffer), size
         backgroundColor = WebPDemuxGetI(demuxer, WEBP_FF_BACKGROUND_COLOR);
 
         if (hasFlag(ANIMATION_FLAG)) {
-            __android_log_print(ANDROID_LOG_DEBUG, TAG, "animation webp\n");
+            Logger::debug().tag(TAG) << "animation webp\n";
             animDecoder = WebPAnimDecoderNew(webPData, nullptr);
             WebPAnimDecoderGetInfo(animDecoder, &animInfo);
         } else {
-            __android_log_print(ANDROID_LOG_DEBUG, TAG, "normal webp with %dx%d\n", canvasWidth, canvasHeight);
+            Logger::debug().tag(TAG) << "normal webp width*height " << (int)canvasWidth << "*" << (int)canvasHeight;
         }
 
         // prepare for reading first frame

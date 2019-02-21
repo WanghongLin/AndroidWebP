@@ -12,7 +12,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := webpnative
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../libwebp/src
 
-LOCAL_SRC_FILES := src/main/cpp/webpnative.cpp src/main/cpp/WebPInternal.cpp
+LOCAL_SRC_FILES := src/main/cpp/webpnative.cpp src/main/cpp/WebPInternal.cpp src/main/cpp/Logger.cpp
 
 LOCAL_LDLIBS := -llog
 

@@ -4,6 +4,7 @@
 #include "webpnative.h"
 #include "WebPInternal.h"
 #include <android/log.h>
+#include "Logger.h"
 
 const char* TAG = "WebPNative";
 
@@ -13,7 +14,7 @@ static void WebPCheckVersion_()
     int demux = WebPGetDemuxVersion();
     int decoder = WebPGetDecoderVersion();
 
-    __android_log_print(ANDROID_LOG_DEBUG, TAG, "mux %d, demux %d, decoder %d\n", mux, demux, decoder);
+    Logger::debug().tag(TAG) << "mux " << mux << ", demux " << demux << ", decoder " << decoder;
 }
 
 static jint GetJavaObjectId(JNIEnv* env, jobject obj)

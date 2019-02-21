@@ -11,6 +11,7 @@
 #include <map>
 #include "webp/mux.h"
 #include "webp/demux.h"
+#include "Logger.h"
 
 class WebPInternal {
 
