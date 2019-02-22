@@ -17,6 +17,7 @@
 package com.wanghong.sample
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -42,6 +43,10 @@ class SampleActivity : AppCompatActivity() {
                     ActivityCompat.requestPermissions(this@SampleActivity, arrayOf(this), 0)
                 }
             }
+        }
+
+        imageListButton.setOnClickListener {
+            startActivity(Intent(this@SampleActivity, ListDisplayActivity::class.java))
         }
     }
 

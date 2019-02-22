@@ -110,3 +110,7 @@ bool WebPInternal::hasFlag(int flag) {
     return (flags & flag) == flag;
 }
 
+void WebPInternal::remove(jint id) {
+    internalMaps_.erase(id);
+}
+

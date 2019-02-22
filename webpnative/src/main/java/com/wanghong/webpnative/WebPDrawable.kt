@@ -16,12 +16,15 @@
 
 package com.wanghong.webpnative
 
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.ColorFilter
+import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
-import java.io.FileInputStream
+import android.util.Log
 import java.nio.ByteBuffer
 
 /**
@@ -40,6 +43,7 @@ class WebPDrawable(var webPData: ByteArray? = null) : Drawable() {
 
     companion object {
         val TAG = WebPDrawable::class.java.simpleName
+        const val VERBOSE = false
     }
 
     fun start() {
@@ -81,7 +85,7 @@ class WebPDrawable(var webPData: ByteArray? = null) : Drawable() {
                 val webPInfo = WebPInfo()
                 if (webPNative.hasNextFrame()) {
                     webPNative.nextFrame(byteBuffer, webPInfo)
-                    println("WebPDrawable.run $webPInfo")
+                    if (VERBOSE) Log.d(TAG, "$webPInfo")
                     invalidateSelf()
 
                     var delay = webPInfo.timeStamp - previousTimestamp
@@ -96,7 +100,7 @@ class WebPDrawable(var webPData: ByteArray? = null) : Drawable() {
         }
 
         handler.post(runnable)
-        println("WebPDrawable.$webPInfo")
+        if (VERBOSE) Log.d(TAG, "$webPInfo")
     }
 
     override fun draw(canvas: Canvas) {

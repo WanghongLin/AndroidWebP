@@ -27,6 +27,7 @@ public:
 
     static WebPInternal* get(jint id);
     static void put(jint id, WebPInternal* internal);
+    static void remove(jint id);
 private:
     bool hasFlag(int flag);
     uint8_t* buffer_;

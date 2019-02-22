@@ -39,12 +39,32 @@
                app:layout_constraintBottom_toBottomOf="parent"
                app:layout_constraintTop_toTopOf="parent"/>
 
-    <com.wanghong.webpnative.WebPImageView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                                           android:visibility="visible"
-                                           app:fileUri="file:///mnt/sdcard/1.webp"
-                                           app:layout_constraintRight_toRightOf="parent"
-                                           app:layout_constraintLeft_toLeftOf="parent"
-                                           app:layout_constraintBottom_toBottomOf="parent"
-                                           app:layout_constraintTop_toTopOf="parent"
-    />
+    <LinearLayout
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <com.wanghong.webpnative.WebPImageView
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:fileUri="file:///mnt/sdcard/1.webp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        <Button
+                android:id="@+id/imageListButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/image_list"/>
+
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

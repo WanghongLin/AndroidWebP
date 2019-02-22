@@ -31,7 +31,7 @@ class WebPImageView(context: Context) : ImageView(context) {
         val TAG = WebPImageView::class.java.simpleName
     }
 
-    private var fileUri: String? = null
+    var fileUri: String? = null
 
     private val webPDrawable = WebPDrawable()
 
