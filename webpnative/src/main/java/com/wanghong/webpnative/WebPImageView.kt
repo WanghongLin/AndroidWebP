@@ -29,6 +29,7 @@ class WebPImageView(context: Context) : ImageView(context) {
 
     companion object {
         val TAG = WebPImageView::class.java.simpleName
+        const val VERBOSE = true
     }
 
     var fileUri: String? = null
@@ -83,6 +84,7 @@ class WebPImageView(context: Context) : ImageView(context) {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+        if (VERBOSE) println("WebPImageView.onAttachedToWindow")
         showWebPImage()
     }
 
@@ -96,6 +98,7 @@ class WebPImageView(context: Context) : ImageView(context) {
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
+        if (VERBOSE) println("WebPImageView.onDetachedFromWindow")
         webPDrawable.stop()
     }
 }

@@ -44,6 +44,7 @@ class WebPDrawable(var webPData: ByteArray? = null) : Drawable() {
     companion object {
         val TAG = WebPDrawable::class.java.simpleName
         const val VERBOSE = false
+        const val DEFAULT_ANIMATION_DELAY_MILLIS = 40
     }
 
     fun start() {
@@ -90,7 +91,7 @@ class WebPDrawable(var webPData: ByteArray? = null) : Drawable() {
 
                     var delay = webPInfo.timeStamp - previousTimestamp
                     if (delay <= 0) {
-                        delay = 40
+                        delay = DEFAULT_ANIMATION_DELAY_MILLIS
                     }
 
                     handler.postDelayed(this, delay.toLong())

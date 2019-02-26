@@ -29,12 +29,14 @@ WebPInternal::WebPInternal(uint8_t *buffer, size_t size) : buffer_(buffer), size
             animDecoder = WebPAnimDecoderNew(webPData, nullptr);
             WebPAnimDecoderGetInfo(animDecoder, &animInfo);
         } else {
-            Logger::debug().tag(TAG) << "normal webp width*height " << (int)canvasWidth << "*" << (int)canvasHeight;
+            Logger::debug().tag(TAG) << "normal webp width*height " << canvasWidth << "*" << canvasHeight;
         }
 
         // prepare for reading first frame
         frameNumber = 1;
         iterator = new WebPIterator;
+        currentFrameCount = 0;
+        currentLoopCount = 0;
     }
 }
 
@@ -57,12 +59,17 @@ void WebPInternal::put(jint id, WebPInternal *internal) {
 
 jboolean WebPInternal::hasNextFrame() {
     if (hasFlag(ANIMATION_FLAG)) {
-        return static_cast<jboolean>(WebPAnimDecoderHasMoreFrames(animDecoder));
+        if (currentFrameCount < animInfo.frame_count) {
+            return JNI_TRUE;
+        } else {
+            return JNI_FALSE;
+        }
+        // return static_cast<jboolean>(WebPAnimDecoderHasMoreFrames(animDecoder));
     }
     if (frameNumber == 1 || WebPDemuxNextFrame(iterator) != 0) {
-        return 1;
+        return JNI_TRUE;
     }
-    return 0;
+    return JNI_FALSE;
 }
 
 void WebPInternal::nextFrame(void *outBuffer, size_t outSize) {
@@ -79,6 +86,9 @@ void WebPInternal::nextFrame(void *outBuffer, size_t outSize) {
                 // start from beginning
                 currentFrameCount = 0;
                 WebPAnimDecoderReset(animDecoder);
+            } else {
+                Logger::warn().tag(TAG) << "animation stop loop " << animInfo.loop_count
+                                        << " frame count " << animInfo.frame_count;
             }
         }
         return;

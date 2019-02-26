@@ -32,6 +32,7 @@ public:
 
     Logger& operator<<(char c);
     Logger& operator<<(int i);
+    Logger& operator<<(unsigned ui);
     Logger& operator<<(double f);
     Logger& operator<<(const char* s);
 private:

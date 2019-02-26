@@ -16,6 +16,10 @@ Logger &Logger::operator<<(int i) {
     return *this;
 }
 
+Logger &Logger::operator<<(unsigned ui) {
+    return operator<<(static_cast<int>(ui));
+}
+
 Logger &Logger::operator<<(double f) {
     os_ << f;
     flush();
@@ -56,4 +60,5 @@ Logger& Logger::warn() {
 
 void Logger::flush() {
     __android_log_write(priority_, tag_, os_.str().c_str());
+    os_.str("");
 }
