@@ -18,6 +18,8 @@ package com.wanghong.sample
 
 import android.Manifest
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -25,9 +27,10 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
 import android.support.v7.app.AppCompatActivity
-import com.wanghong.webpnative.WebPDrawable
+import com.wanghong.webpnative.WebPNative
 import kotlinx.android.synthetic.main.activity_sample.*
 import java.io.File
+import kotlin.concurrent.thread
 
 class SampleActivity : AppCompatActivity() {
 
@@ -40,13 +43,26 @@ class SampleActivity : AppCompatActivity() {
                 if (ContextCompat.checkSelfPermission(this@SampleActivity, this) == PermissionChecker.PERMISSION_GRANTED) {
                     displayImage()
                 } else {
-                    ActivityCompat.requestPermissions(this@SampleActivity, arrayOf(this), 0)
+                    ActivityCompat.requestPermissions(this@SampleActivity, arrayOf(this, Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
                 }
             }
         }
 
         imageListButton.setOnClickListener {
             startActivity(Intent(this@SampleActivity, ListDisplayActivity::class.java))
+        }
+
+        encodeRGBA.setOnClickListener {
+            thread {
+                val drawable = resources.getDrawable(R.mipmap.ic_launcher)
+                val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+                drawable.setBounds(0, 0, canvas.width, canvas.height)
+                drawable.draw(canvas)
+
+                val output = Environment.getExternalStorageDirectory().absolutePath + File.separator + "ic_launcher.webp"
+                WebPNative().encodeRGBA(bitmap, output)
+            }
         }
     }
 

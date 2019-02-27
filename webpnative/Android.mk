@@ -14,7 +14,7 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/../libwebp/src
 
 LOCAL_SRC_FILES := src/main/cpp/webpnative.cpp src/main/cpp/WebPInternal.cpp src/main/cpp/Logger.cpp
 
-LOCAL_LDLIBS := -llog
+LOCAL_LDLIBS := -llog -ljnigraphics
 
 LOCAL_STATIC_LIBRARIES := webpdemux webpmux
 

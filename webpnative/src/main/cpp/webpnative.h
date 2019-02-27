@@ -47,6 +47,14 @@ JNIEXPORT void JNICALL Java_com_wanghong_webpnative_WebPNative_nextFrame
 JNIEXPORT void JNICALL Java_com_wanghong_webpnative_WebPNative_release
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_wanghong_webpnative_WebPNative
+ * Method:    encodeRGBA
+ * Signature: (Landroid/graphics/Bitmap;Ljava/lang/String;F)V
+ */
+JNIEXPORT void JNICALL Java_com_wanghong_webpnative_WebPNative_encodeRGBA
+  (JNIEnv *, jobject, jobject, jstring, jfloat);
+
 #ifdef __cplusplus
 }
 #endif

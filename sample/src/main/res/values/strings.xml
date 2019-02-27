@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Sample</string>
     <string name="image_list">Image List</string>
+    <string name="encodeRGBA">encode RGBA</string>
 </resources>

@@ -4,6 +4,7 @@
 #include "webpnative.h"
 #include "WebPInternal.h"
 #include <android/log.h>
+#include <fstream>
 #include "Logger.h"
 
 const char* TAG = "WebPNative";
@@ -61,4 +62,38 @@ void Java_com_wanghong_webpnative_WebPNative_release(JNIEnv * env, jobject obj) 
         WebPInternal::remove(id);
         delete internal;
     }
+}
+
+void Java_com_wanghong_webpnative_WebPNative_encodeRGBA(JNIEnv * env, jobject obj,
+                                                        jobject bitmap, jstring output, jfloat quality) {
+    jboolean copy = 0;
+    const char* path = env->GetStringUTFChars(output, &copy);
+
+    AndroidBitmapInfo bitmapInfo;
+    AndroidBitmap_getInfo(env, bitmap, &bitmapInfo);
+
+    void* buffer = nullptr;
+    AndroidBitmap_lockPixels(env, bitmap, &buffer);
+
+    uint8_t* out_buffer = nullptr;
+    if (bitmapInfo.format == ANDROID_BITMAP_FORMAT_RGBA_8888) {
+        size_t bytes = 0;
+        if ((bytes = WebPEncodeRGBA(static_cast<uint8_t *>(buffer), bitmapInfo.width, bitmapInfo.height,
+                                    bitmapInfo.stride, quality, &out_buffer)) > 0) {
+            std::ofstream of(path);
+            if (of.is_open()) {
+                of.write(reinterpret_cast<const char *>(out_buffer), bytes);
+            }
+            Logger::debug().tag(TAG) << "write file " << path << bitmapInfo.width << 'x' << bitmapInfo.height << '\n';
+            of.flush();
+            of.close();
+        } else {
+            Logger::error().tag(TAG) << "encode error\n";
+        }
+    } else {
+        Logger::warn().tag(TAG) << "the given bitmap format not supported\n";
+    }
+
+    AndroidBitmap_unlockPixels(env, bitmap);
+    env->ReleaseStringUTFChars(output, path);
 }

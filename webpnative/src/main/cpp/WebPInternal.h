@@ -11,6 +11,8 @@
 #include <map>
 #include "webp/mux.h"
 #include "webp/demux.h"
+#include "webp/encode.h"
+#include <android/bitmap.h>
 #include "Logger.h"
 
 class WebPInternal {

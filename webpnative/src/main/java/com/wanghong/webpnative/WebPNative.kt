@@ -16,6 +16,7 @@
 
 package com.wanghong.webpnative
 
+import android.graphics.Bitmap
 import java.nio.ByteBuffer
 
 /**
@@ -36,4 +37,6 @@ class WebPNative {
     external fun nextFrame(byteBuffer: ByteBuffer, webPInfo: WebPInfo)
 
     external fun release()
+
+    external fun encodeRGBA(bitmap: Bitmap, outPath: String, qualityFactor: Float = 90.0f)
 }

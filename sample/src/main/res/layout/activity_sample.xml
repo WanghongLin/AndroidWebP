@@ -66,5 +66,12 @@
                 android:layout_gravity="center_horizontal"
                 android:text="@string/image_list"/>
 
+        <Button
+                android:id="@+id/encodeRGBA"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/encodeRGBA"/>
+
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
