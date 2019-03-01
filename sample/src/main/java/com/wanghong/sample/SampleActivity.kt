@@ -17,9 +17,10 @@
 package com.wanghong.sample
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Canvas
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -27,12 +28,20 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
 import android.support.v7.app.AppCompatActivity
+import android.widget.Toast
 import com.wanghong.webpnative.WebPNative
 import kotlinx.android.synthetic.main.activity_sample.*
 import java.io.File
 import kotlin.concurrent.thread
 
 class SampleActivity : AppCompatActivity() {
+
+    companion object {
+        const val REQUEST_CODE_GET_CONTENT = 123
+        const val REQUEST_CODE_GET_RW_EXTERNAL_PERMISSION = 124
+    }
+
+    private lateinit var bitmap: Bitmap
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +52,7 @@ class SampleActivity : AppCompatActivity() {
                 if (ContextCompat.checkSelfPermission(this@SampleActivity, this) == PermissionChecker.PERMISSION_GRANTED) {
                     displayImage()
                 } else {
-                    ActivityCompat.requestPermissions(this@SampleActivity, arrayOf(this, Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+                    ActivityCompat.requestPermissions(this@SampleActivity, arrayOf(this), 0)
                 }
             }
         }
@@ -53,26 +62,69 @@ class SampleActivity : AppCompatActivity() {
         }
 
         encodeRGBA.setOnClickListener {
-            thread {
-                val drawable = resources.getDrawable(R.mipmap.ic_launcher)
-                val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-                val canvas = Canvas(bitmap)
-                drawable.setBounds(0, 0, canvas.width, canvas.height)
-                drawable.draw(canvas)
-
-                val output = Environment.getExternalStorageDirectory().absolutePath + File.separator + "ic_launcher.webp"
-                WebPNative().encodeRGBA(bitmap, output)
-            }
+            pickImage()
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults[0] == PermissionChecker.PERMISSION_GRANTED) {
+        if (requestCode == 0 && grantResults[0] == PermissionChecker.PERMISSION_GRANTED) {
             displayImage()
+        }
+        if (requestCode == REQUEST_CODE_GET_RW_EXTERNAL_PERMISSION && grantResults[0] == PermissionChecker.PERMISSION_GRANTED) {
+            performEncodeImage(bitmap)
         }
     }
 
     private fun displayImage() {
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_GET_CONTENT &&
+            resultCode == Activity.RESULT_OK) {
+            data?.data?.let {
+                contentResolver.openInputStream(it)?.readBytes()?.let { array ->
+                    BitmapFactory.decodeByteArray(array, 0, array.size)?.let { bitmap ->
+                        encodeImage(bitmap)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun pickImage() {
+        Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+        }.let {
+            startActivityForResult(it, REQUEST_CODE_GET_CONTENT)
+        }
+    }
+
+    private fun performEncodeImage(bitmap: Bitmap) {
+        thread {
+            val output = Environment.getExternalStorageDirectory().absolutePath + File.separator + "ic_launcher.webp"
+            WebPNative().encodeRGBA(bitmap, output)
+            runOnUiThread {
+                Toast.makeText(this@SampleActivity, "output to $output", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            if (!bitmap.isRecycled) {
+                bitmap.recycle()
+            }
+        }
+    }
+
+    private fun encodeImage(bitmap: Bitmap) {
+        with(Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+            if (ContextCompat.checkSelfPermission(this@SampleActivity, this) ==
+                    PermissionChecker.PERMISSION_GRANTED) {
+                performEncodeImage(bitmap)
+            } else {
+                this@SampleActivity.bitmap = bitmap
+                ActivityCompat.requestPermissions(this@SampleActivity, arrayOf(this), REQUEST_CODE_GET_RW_EXTERNAL_PERMISSION)
+            }
+        }
     }
 }
