@@ -17,15 +17,16 @@
 package com.wanghong.webpnative
 
 import android.content.Context
+import android.support.v7.widget.AppCompatImageView
 import android.util.AttributeSet
-import android.util.Log
-import android.widget.ImageView
 import java.io.FileInputStream
 
 /**
+ * WebP image view support animation
+ *
  * Created by wanghonglin on 2019/2/19 7:29 PM.
  */
-class WebPImageView(context: Context) : ImageView(context) {
+class WebPImageView(context: Context) : AppCompatImageView(context) {
 
     companion object {
         val TAG = WebPImageView::class.java.simpleName

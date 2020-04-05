@@ -14,9 +14,24 @@
  * limitations under the License.
  */
 
+apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+
+publish {
+
+    def groupProjectID = 'com.wanghong.webpnative'
+    def artifactProjectID = 'webpnative'
+    def publishVersionID = '0.1.0'
+
+    userOrg = 'wanghonglin'
+    groupId = groupProjectID
+    artifactId = artifactProjectID
+    publishVersion = publishVersionID
+    desc = 'Another simple libwebp integration for Android'
+    website = 'https://github.com/WanghongLin/AndroidWebP'
+}
 
 android {
     compileSdkVersion 28
@@ -54,15 +69,20 @@ android {
 }
 
 afterEvaluate {
-    task generateCppHeader(dependsOn: compileDebugKotlin) {
-        println "bootstrap class path ${android.getBootClasspath()[0]}"
-        println "class path ${dependsOn[0].destinationDir}"
-        def output = android.sourceSets.main.jni.srcDirs[0].path.replace('jni', 'cpp') + File.separator + "webpnative.h"
-        // android.getSdkDirectory().getAbsolutePath()
-        println "output to ${output}"
-        exec {
-             executable '/bin/bash'
-             args '-c', "javah -bootclasspath ${android.getBootClasspath()[0]} -cp ${dependsOn[0].destinationDir} -o ${output} com.wanghong.webpnative.WebPNative"
+    project.tasks.all {
+        if (it.name == 'compileDebugKotlin') {
+            def clzDir = it.destinationDir
+            it.doLast {
+                println "bootstrap class path ${android.getBootClasspath()[0]}"
+                println "class path ${clzDir}"
+                def output = android.sourceSets.main.jni.srcDirs[0].path.replace('jni', 'cpp') + File.separator + "webpnative.h"
+                // android.getSdkDirectory().getAbsolutePath()
+                println "output to ${output}"
+                exec {
+                    executable '/bin/bash'
+                    args '-c', "javah -bootclasspath ${android.getBootClasspath()[0]} -cp ${clzDir} -o ${output} com.wanghong.webpnative.WebPNative"
+                }
+            }
         }
     }
 }

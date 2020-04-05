@@ -28,6 +28,8 @@ import android.util.Log
 import java.nio.ByteBuffer
 
 /**
+ * WebP drawable support animation
+ *
  * Created by wanghonglin on 2019/2/18 11:37 AM.
  */
 class WebPDrawable(var webPData: ByteArray? = null) : Drawable() {
@@ -42,7 +44,7 @@ class WebPDrawable(var webPData: ByteArray? = null) : Drawable() {
     private var previousTimestamp: Int = 0
 
     companion object {
-        val TAG = WebPDrawable::class.java.simpleName
+        val TAG: String = WebPDrawable::class.java.simpleName
         const val VERBOSE = false
         const val DEFAULT_ANIMATION_DELAY_MILLIS = 40
     }

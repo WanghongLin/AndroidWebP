@@ -24,11 +24,11 @@ static jint GetJavaObjectId(JNIEnv* env, jobject obj)
     return env->CallIntMethod(obj, mid);
 }
 
-void Java_com_wanghong_webpnative_WebPNative_checkWebPVersion(JNIEnv * env, jobject obj) {
+extern "C" void Java_com_wanghong_webpnative_WebPNative_checkWebPVersion(JNIEnv * env, jobject obj) {
     WebPCheckVersion_();
 }
 
-void Java_com_wanghong_webpnative_WebPNative_initialize(JNIEnv * env, jobject obj, jbyteArray bytes_, jobject webpInfo) {
+extern "C" void Java_com_wanghong_webpnative_WebPNative_initialize(JNIEnv * env, jobject obj, jbyteArray bytes_, jobject webpInfo) {
     size_t len = static_cast<size_t>(env->GetArrayLength(bytes_));
     uint8_t* buf = new uint8_t[len];
     env->GetByteArrayRegion(bytes_, 0, len, reinterpret_cast<jbyte *>(buf));
@@ -37,7 +37,7 @@ void Java_com_wanghong_webpnative_WebPNative_initialize(JNIEnv * env, jobject ob
     WebPInternal::put(GetJavaObjectId(env, obj), webPInternal);
 }
 
-jboolean Java_com_wanghong_webpnative_WebPNative_hasNextFrame(JNIEnv * env, jobject obj) {
+extern "C" jboolean Java_com_wanghong_webpnative_WebPNative_hasNextFrame(JNIEnv * env, jobject obj) {
     WebPInternal* internal = WebPInternal::get(GetJavaObjectId(env, obj));
     if (internal) {
         return internal->hasNextFrame();
@@ -45,7 +45,7 @@ jboolean Java_com_wanghong_webpnative_WebPNative_hasNextFrame(JNIEnv * env, jobj
     return 0;
 }
 
-void Java_com_wanghong_webpnative_WebPNative_nextFrame(JNIEnv * env, jobject obj, jobject buf, jobject webpInfo) {
+extern "C" void Java_com_wanghong_webpnative_WebPNative_nextFrame(JNIEnv * env, jobject obj, jobject buf, jobject webpInfo) {
     WebPInternal* internal = WebPInternal::get(GetJavaObjectId(env, obj));
     if (internal) {
         void *buffer = env->GetDirectBufferAddress(buf);
@@ -55,7 +55,7 @@ void Java_com_wanghong_webpnative_WebPNative_nextFrame(JNIEnv * env, jobject obj
     }
 }
 
-void Java_com_wanghong_webpnative_WebPNative_release(JNIEnv * env, jobject obj) {
+extern "C" void Java_com_wanghong_webpnative_WebPNative_release(JNIEnv * env, jobject obj) {
     const jint id = GetJavaObjectId(env, obj);
     WebPInternal* internal = WebPInternal::get(id);
     if (internal) {
@@ -64,8 +64,8 @@ void Java_com_wanghong_webpnative_WebPNative_release(JNIEnv * env, jobject obj) 
     }
 }
 
-void Java_com_wanghong_webpnative_WebPNative_encodeRGBA(JNIEnv * env, jobject obj,
-                                                        jobject bitmap, jstring output, jfloat quality) {
+extern "C" void Java_com_wanghong_webpnative_WebPNative_encodeRGBA(JNIEnv * env, jobject obj,
+                                                                   jobject bitmap, jstring output, jfloat quality) {
     jboolean copy = 0;
     const char* path = env->GetStringUTFChars(output, &copy);
 
